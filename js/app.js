@@ -52,9 +52,15 @@ $(document).ready(function() {
             $('#ajax-loader').fadeOut();
         });
 
+    //TODO GET THIS WORKING
     $('#search').bind('search keyup', function() {
-        $.each(markers, function() {
-            
+        var regEx = new RegExp($('#search').value);
+
+        $.each(markers, function(idx, mkr) {
+            mkr.setMap(null);
+            if(regEx.test(mkr.cam.cameralabel)) {
+                mkr.setMap(map);
+            }
         });
     });
 });
