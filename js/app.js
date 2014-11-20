@@ -40,6 +40,7 @@ $(document).ready(function() {
                     html += '<img src="' + cam.imageurl.url + '"/>';
                     infoWindow.setContent(html);
                     infoWindow.open(map, this);
+                    map.panTo(this.getPosition());
                 });
 
                 markers.push(marker);
@@ -52,13 +53,11 @@ $(document).ready(function() {
             $('#ajax-loader').fadeOut();
         });
 
-    //TODO GET THIS WORKING
     $('#search').bind('search keyup', function() {
-        var regEx = new RegExp($('#search').value);
-
+        var search = this;
         $.each(markers, function(idx, mkr) {
             mkr.setMap(null);
-            if(regEx.test(mkr.cam.cameralabel)) {
+            if(mkr.cam.cameralabel.toLowerCase().indexOf(search.value.toLowerCase()) > -1) {
                 mkr.setMap(map);
             }
         });
