@@ -23,6 +23,9 @@ $(document).ready(function() {
 
     var infoWindow = new google.maps.InfoWindow();
 
+    //prepare a markercluster
+    var mc = new MarkerClusterer(map, markers, {gridSize: 35});
+
     //get data
     $.getJSON('http://data.seattle.gov/resource/65fc-btcc.json')
         .done(function(data) {
@@ -35,7 +38,8 @@ $(document).ready(function() {
                         lng: Number(cam.location.longitude)
                     },
                     map: map,
-                    cam: cam
+                    cam: cam,
+                    icon: 'img/cctv.png'
                 });
 
                 //open info window on marker click
@@ -50,6 +54,9 @@ $(document).ready(function() {
                 //keep track of all markers
                 markers.push(marker);
             });
+
+            //add all markers to the cluster
+            mc.addMarkers(markers);
         })
         .fail(function(err) {
             console.log(err);
@@ -59,16 +66,22 @@ $(document).ready(function() {
         });
 
     //close info window on map click
-    //TODO finish this
-//    $('map').
+    google.maps.event.addListener(map, 'click', function() {
+        infoWindow.close();
+    });
 
     //filter all markers in markers array
     $('#search').bind('search keyup', function() {
         var search = this;
+
+        //clear the cluster in preparation for a new list of visible markers
+        mc.clearMarkers();
+
         $.each(markers, function(idx, mkr) {
             mkr.setMap(null);
             if(mkr.cam.cameralabel.toLowerCase().indexOf(search.value.toLowerCase()) > -1) {
                 mkr.setMap(map);
+                mc.addMarker(mkr);
             }
         });
     });
